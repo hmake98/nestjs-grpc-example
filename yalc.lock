@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "nestjs-grpc": {
+      "signature": "66800027b03a0b36feaa17a142deefc6",
+      "file": true
+    }
+  }
+}

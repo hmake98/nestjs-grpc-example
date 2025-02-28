@@ -1,0 +1,28 @@
+{
+    "collection": "@nestjs/schematics",
+    "sourceRoot": "src",
+    "compilerOptions": {
+        "deleteOutDir": true,
+        "webpack": false
+    },
+    "projects": {
+        "server": {
+            "type": "application",
+            "root": "src/server",
+            "entryFile": "main",
+            "sourceRoot": "src/server",
+            "compilerOptions": {
+                "tsConfigPath": "tsconfig.server.json"
+            }
+        },
+        "client": {
+            "type": "application",
+            "root": "src/client",
+            "entryFile": "main",
+            "sourceRoot": "src/client",
+            "compilerOptions": {
+                "tsConfigPath": "tsconfig.client.json"
+            }
+        }
+    }
+}

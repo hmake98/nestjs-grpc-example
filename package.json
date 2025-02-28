@@ -1,0 +1,49 @@
+{
+    "name": "nestjs-grpc-example",
+    "version": "0.0.1",
+    "description": "Example project demonstrating nestjs-grpc usage",
+    "scripts": {
+        "prebuild": "rimraf dist",
+        "build": "nest build",
+        "build:server": "nest build server --webpack false",
+        "build:client": "nest build client --webpack false",
+        "format": "prettier --write \"src/**/*.ts\"",
+        "start": "nest start",
+        "start:dev": "nest start --watch",
+        "start:server": "nest start server",
+        "start:server:dev": "nest start server --watch",
+        "start:client": "nest start client",
+        "start:client:dev": "nest start client --watch",
+        "start:debug": "nest start --debug --watch",
+        "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+        "generate:types": "nestjs-grpc generate --proto ./proto/user.proto --output ./src/generated"
+    },
+    "dependencies": {
+        "@grpc/grpc-js": "^1.8.0",
+        "@grpc/proto-loader": "^0.7.0",
+        "@nestjs/common": "^9.0.0",
+        "@nestjs/core": "^9.0.0",
+        "@nestjs/microservices": "^9.0.0",
+        "@nestjs/platform-express": "^9.0.0",
+        "nestjs-grpc": "file:.yalc/nestjs-grpc",
+        "reflect-metadata": "^0.1.13",
+        "rimraf": "^3.0.2",
+        "rxjs": "^7.5.7"
+    },
+    "devDependencies": {
+        "@nestjs/cli": "^9.0.0",
+        "@nestjs/schematics": "^9.0.0",
+        "@types/express": "^4.17.13",
+        "@types/node": "^18.11.9",
+        "@typescript-eslint/eslint-plugin": "^5.44.0",
+        "@typescript-eslint/parser": "^5.44.0",
+        "eslint": "^8.28.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-prettier": "^4.2.1",
+        "prettier": "^2.8.0",
+        "ts-loader": "^9.4.1",
+        "ts-node": "^10.9.1",
+        "tsconfig-paths": "^4.1.0",
+        "typescript": "^4.9.3"
+    }
+}
