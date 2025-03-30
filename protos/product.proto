@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package product;
+
+// Product service for managing products
+service ProductService {
+  // Gets a product by ID
+  rpc GetProduct (GetProductRequest) returns (Product) {}
+  
+  // Lists products with optional filtering
+  rpc ListProducts (ListProductsRequest) returns (ListProductsResponse) {}
+  
+  // Creates a new product
+  rpc CreateProduct (CreateProductRequest) returns (Product) {}
+  
+  // Updates an existing product
+  rpc UpdateProduct (UpdateProductRequest) returns (Product) {}
+  
+  // Deletes a product
+  rpc DeleteProduct (DeleteProductRequest) returns (DeleteProductResponse) {}
+  
+  // Stream price updates
+  rpc WatchPriceUpdates (WatchPriceUpdatesRequest) returns (stream PriceUpdate) {}
+}
+
+// Request message for getting a product
+message GetProductRequest {
+  string id = 1;
+}
+
+// Request message for listing products
+message ListProductsRequest {
+  optional string category = 1;
+  optional double min_price = 2;
+  optional double max_price = 3;
+  int32 page = 4;
+  int32 page_size = 5;
+}
+
+// Response message for listing products
+message ListProductsResponse {
+  repeated Product products = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+// Request message for creating a product
+message CreateProductRequest {
+  string name = 1;
+  string description = 2;
+  double price = 3;
+  string category = 4;
+  int32 stock = 5;
+}
+
+// Request message for updating a product
+message UpdateProductRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string description = 3;
+  optional double price = 4;
+  optional string category = 5;
+  optional int32 stock = 6;
+}
+
+// Request message for deleting a product
+message DeleteProductRequest {
+  string id = 1;
+}
+
+// Response message for deleting a product
+message DeleteProductResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Request message for watching price updates
+message WatchPriceUpdatesRequest {
+  repeated string product_ids = 1;
+}
+
+// Message for price updates
+message PriceUpdate {
+  string product_id = 1;
+  string product_name = 2;
+  double old_price = 3;
+  double new_price = 4;
+  string updated_at = 5;
+}
+
+// Product message representing a product entity
+message Product {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  string category = 5;
+  int32 stock = 6;
+  bool available = 7;
+  string created_at = 8;
+  string updated_at = 9;
+}

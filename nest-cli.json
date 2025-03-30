@@ -1,28 +1,17 @@
 {
+    "$schema": "https://json.schemastore.org/nest-cli",
     "collection": "@nestjs/schematics",
     "sourceRoot": "src",
     "compilerOptions": {
         "deleteOutDir": true,
-        "webpack": false
-    },
-    "projects": {
-        "server": {
-            "type": "application",
-            "root": "src/server",
-            "entryFile": "main",
-            "sourceRoot": "src/server",
-            "compilerOptions": {
-                "tsConfigPath": "tsconfig.server.json"
+        "webpack": false,
+        "tsConfigPath": "tsconfig.json",
+        "assets": [
+            {
+                "include": "../protos/**/*.proto",
+                "outDir": "dist/protos"
             }
-        },
-        "client": {
-            "type": "application",
-            "root": "src/client",
-            "entryFile": "main",
-            "sourceRoot": "src/client",
-            "compilerOptions": {
-                "tsConfigPath": "tsconfig.client.json"
-            }
-        }
+        ],
+        "watchAssets": true
     }
 }

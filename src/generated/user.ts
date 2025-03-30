@@ -3,38 +3,63 @@
 import { Observable } from 'rxjs';
 
 export interface UserServiceClient {
-  findOne(request: UserById): Observable<User>;
-  findAll(request: Empty): Observable<Users>;
-  create(request: CreateUserRequest): Observable<User>;
+  getUser(request: GetUserRequest): Observable<User>;
+  createUser(request: CreateUserRequest): Observable<User>;
+  updateUser(request: UpdateUserRequest): Observable<User>;
+  deleteUser(request: DeleteUserRequest): Observable<DeleteUserResponse>;
+  watchUsers(request: WatchUsersRequest): Observable<User>;
 }
 
 export interface UserServiceInterface {
-  findOne(request: UserById): Observable<User>;
-  findAll(request: Empty): Observable<Users>;
-  create(request: CreateUserRequest): Observable<User>;
+  getUser(request: GetUserRequest): Promise<User> | Observable<User>;
+  createUser(request: CreateUserRequest): Promise<User> | Observable<User>;
+  updateUser(request: UpdateUserRequest): Promise<User> | Observable<User>;
+  deleteUser(request: DeleteUserRequest): Promise<DeleteUserResponse> | Observable<DeleteUserResponse>;
+  watchUsers(request: WatchUsersRequest): Observable<User>;
 }
 
-export interface Empty {
-}
-
-export interface UserById {
+export interface GetUserRequest {
   id?: string;
 }
 
 export interface CreateUserRequest {
   name?: string;
-  age?: number;
   email?: string;
+  role?: UserRole;
+}
+
+export interface UpdateUserRequest {
+  id?: string;
+  name?: string;
+  email?: string;
+  role?: UserRole;
+}
+
+export interface DeleteUserRequest {
+  id?: string;
+}
+
+export interface DeleteUserResponse {
+  success?: boolean;
+  message?: string;
+}
+
+export interface WatchUsersRequest {
+  roleFilter?: string;
 }
 
 export interface User {
   id?: string;
   name?: string;
-  age?: number;
   email?: string;
+  role?: UserRole;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-export interface Users {
-  users?: User[];
+export enum UserRole {
+  USER = 0,
+  ADMIN = 1,
+  MODERATOR = 2,
 }
 
