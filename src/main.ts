@@ -1,38 +1,42 @@
-import { NestFactory } from "@nestjs/core";
-import { MicroserviceOptions, Transport } from "@nestjs/microservices";
-import { Logger } from "@nestjs/common";
-import { AppModule } from "./app.module";
-import * as path from "path";
+import { NestFactory } from '@nestjs/core';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { join } from 'path';
+import { AppModule } from './app.module';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
-  const logger = new Logger("Main");
+    const logger = new Logger('Bootstrap');
 
-  // Create the main NestJS application
-  const app = await NestFactory.create(AppModule);
+    // Create the main application instance
+    const app = await NestFactory.create(AppModule);
 
-  // Create a hybrid application with both HTTP and gRPC
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.GRPC,
-    options: {
-      package: ["user", "product"],
-      protoPath: [
-        path.join(__dirname, "../protos/user.proto"),
-        path.join(__dirname, "../protos/product.proto"),
-      ],
-      url: "localhost:5000",
-    },
-  });
+    // Create the User microservice
+    const userMicroservice = app.connectMicroservice<MicroserviceOptions>({
+        transport: Transport.GRPC,
+        options: {
+            package: 'user',
+            protoPath: join(__dirname, '../protos/user.proto'),
+            url: 'localhost:50051',
+        },
+    });
 
-  // Start the microservice
-  await app.startAllMicroservices();
-  logger.log("gRPC microservice running on: localhost:5000");
+    // Create the Product microservice
+    const productMicroservice = app.connectMicroservice<MicroserviceOptions>({
+        transport: Transport.GRPC,
+        options: {
+            package: 'product',
+            protoPath: join(__dirname, '../protos/product.proto'),
+            url: 'localhost:50052',
+        },
+    });
 
-  // Start the HTTP server
-  await app.listen(3000);
-  logger.log("HTTP server running on: http://localhost:3000");
-  logger.log(
-    "gRPC Dashboard available at: http://localhost:3000/grpc-dashboard/api/info"
-  );
+    // Start all microservices
+    await app.startAllMicroservices();
+
+    // Start the HTTP server (for dashboard)
+    await app.listen(3000);
+
+    logger.log(`Application is running on: ${await app.getUrl()}`);
 }
 
 bootstrap();

@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit, Logger } from "@nestjs/common";
-import { GrpcClientFactory, MetadataUtils } from "nestjs-grpc";
+import { GrpcClientFactory } from "nestjs-grpc";
 import { firstValueFrom, Observable } from "rxjs";
+import { Metadata } from "@grpc/grpc-js";
 import { User, CreateUserRequest, UserServiceClient } from "../generated/user";
 import {
   Product,
@@ -104,6 +105,9 @@ export class ClientService implements OnModuleInit {
       // Example 1: Get a user with trace ID metadata
       if (this.userClient && typeof this.userClient.getUser === "function") {
         try {
+          const metadata = new Metadata();
+          metadata.add("trace-id", `trace-${Date.now()}`);
+
           const user = await this.userClient.getUser({ id: "1" });
           console.log("Retrieved user:", user);
         } catch (error) {
@@ -148,8 +152,9 @@ export class ClientService implements OnModuleInit {
         this.productClient &&
         typeof this.productClient.createProduct === "function"
       ) {
-        const authMetadata = MetadataUtils.withAuthToken("demo-token");
-        authMetadata.add("user-id", "demo-admin");
+        const metadata = new Metadata();
+        metadata.add("authorization", "Bearer demo-token");
+        metadata.add("user-id", "demo-admin");
 
         try {
           const newProduct = await this.productClient.createProduct({
@@ -171,6 +176,10 @@ export class ClientService implements OnModuleInit {
         typeof this.productClient.watchPriceUpdates === "function"
       ) {
         try {
+          const metadata = new Metadata();
+          metadata.add("client-id", "app-client");
+          metadata.add("client-version", "1.0.0");
+
           const priceUpdates = this.productClient.watchPriceUpdates({
             productIds: ["1", "2"],
           });
@@ -215,7 +224,7 @@ export class ClientService implements OnModuleInit {
     if (!this.userClient || typeof this.userClient.getUser !== "function") {
       throw new Error("UserService not available or getUser method not found");
     }
-    return this.userClient.getUser({ id });
+    return firstValueFrom(this.userClient.getUser({ id }));
   }
 
   /**
@@ -230,7 +239,7 @@ export class ClientService implements OnModuleInit {
         "ProductService not available or getProduct method not found"
       );
     }
-    return this.productClient.getProduct({ id });
+    return firstValueFrom(this.productClient.getProduct({ id }));
   }
 
   /**
@@ -247,7 +256,7 @@ export class ClientService implements OnModuleInit {
         "ProductService not available or listProducts method not found"
       );
     }
-    return this.productClient.listProducts(options);
+    return firstValueFrom(this.productClient.listProducts(options));
   }
 
   /**
@@ -259,8 +268,9 @@ export class ClientService implements OnModuleInit {
         "UserService not available or createUser method not found"
       );
     }
-    const metadata = MetadataUtils.withAuthToken(token);
-    return this.userClient.createUser(userData, metadata);
+    const metadata = new Metadata();
+    metadata.add("authorization", `Bearer ${token}`);
+    return firstValueFrom(this.userClient.createUser(userData));
   }
 
   /**
@@ -278,8 +288,9 @@ export class ClientService implements OnModuleInit {
         "ProductService not available or createProduct method not found"
       );
     }
-    const metadata = MetadataUtils.fromObject({ "user-id": userId });
-    return this.productClient.createProduct(productData, metadata);
+    const metadata = new Metadata();
+    metadata.add("user-id", userId);
+    return firstValueFrom(this.productClient.createProduct(productData));
   }
 
   /**
@@ -291,11 +302,10 @@ export class ClientService implements OnModuleInit {
         "UserService not available or watchUsers method not found"
       );
     }
-    const metadata = MetadataUtils.fromObject({
-      "client-id": "app-client",
-      "trace-id": `trace-${Date.now()}`,
-    });
-    return this.userClient.watchUsers({ roleFilter }, metadata);
+    const metadata = new Metadata();
+    metadata.add("client-id", "app-client");
+    metadata.add("trace-id", `trace-${Date.now()}`);
+    return this.userClient.watchUsers({ roleFilter });
   }
 
   /**
@@ -310,13 +320,9 @@ export class ClientService implements OnModuleInit {
         "ProductService not available or watchPriceUpdates method not found"
       );
     }
-    const metadata = MetadataUtils.fromObject({
-      "client-id": "app-client",
-      "client-version": "1.0.0",
-    });
-    return this.productClient.watchPriceUpdates(
-      { product_ids: productIds },
-      metadata
-    );
+    const metadata = new Metadata();
+    metadata.add("client-id", "app-client");
+    metadata.add("client-version", "1.0.0");
+    return this.productClient.watchPriceUpdates({ productIds });
   }
 }

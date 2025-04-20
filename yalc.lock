@@ -2,9 +2,9 @@
   "version": "v1",
   "packages": {
     "nestjs-grpc": {
-      "signature": "bb835e8553270dfde206a041f0b8b3ce",
+      "signature": "d8b30a5be4e299dd14ec5773d9d2f1c4",
       "file": true,
-      "replaced": "^1.1.0"
+      "replaced": "^1.1.2"
     }
   }
 }
